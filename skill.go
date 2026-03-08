@@ -1,6 +1,7 @@
 package fs
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
@@ -128,7 +129,7 @@ func RegisterFsSkill(registry *skill.ToolRegistry, agent interface{}) error {
 	return nil
 }
 
-func handleReadFile(params map[string]interface{}) (interface{}, error) {
+func handleReadFile(ctx context.Context, params map[string]interface{}) (interface{}, error) {
 	path, ok := params["path"].(string)
 	if !ok || path == "" {
 		return nil, fmt.Errorf("path is required")
@@ -152,7 +153,7 @@ func handleReadFile(params map[string]interface{}) (interface{}, error) {
 	}, nil
 }
 
-func handleWriteFile(params map[string]interface{}) (interface{}, error) {
+func handleWriteFile(ctx context.Context, params map[string]interface{}) (interface{}, error) {
 	path, ok := params["path"].(string)
 	if !ok || path == "" {
 		return nil, fmt.Errorf("path is required")
@@ -182,7 +183,7 @@ func handleWriteFile(params map[string]interface{}) (interface{}, error) {
 	}, nil
 }
 
-func handleEditFile(params map[string]interface{}) (interface{}, error) {
+func handleEditFile(ctx context.Context, params map[string]interface{}) (interface{}, error) {
 	path, ok := params["path"].(string)
 	if !ok || path == "" {
 		return nil, fmt.Errorf("path is required")
