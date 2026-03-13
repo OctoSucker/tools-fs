@@ -1,9 +1,9 @@
-module github.com/OctoSucker/skill-fs
+module github.com/OctoSucker/tools-fs
 
 go 1.24.4
 
 toolchain go1.24.10
 
-require github.com/OctoSucker/octosucker-skill v0.0.0
+require github.com/OctoSucker/octosucker-tools v0.0.0
 
-replace github.com/OctoSucker/octosucker-skill => ../octosucker-skill
+replace github.com/OctoSucker/octosucker-tools => ../octosucker-tools
