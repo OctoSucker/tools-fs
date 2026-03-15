@@ -18,7 +18,7 @@ type SkillFs struct {
 	roots []string
 }
 
-func (s *SkillFs) Init(config map[string]interface{}) error {
+func (s *SkillFs) Init(config map[string]interface{}, submitTask func(string) error) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -52,8 +52,8 @@ func (s *SkillFs) getAllowedRoots() []string {
 	return out
 }
 
-func RegisterFsSkill(registry *tools.ToolRegistry, agent interface{}) error {
-	registry.Register(&tools.Tool{
+func (s *SkillFs) Register(registry *tools.ToolRegistry, agent interface{}, providerName string) error {
+	registry.RegisterTool(providerName, &tools.Tool{
 		Name:        "read_file",
 		Description: "读取指定路径的文件内容。相对路径（如 test.txt）会在第一个工作区目录下解析；绝对路径必须在 workspace_dirs 内。",
 		Parameters: map[string]interface{}{
@@ -69,7 +69,7 @@ func RegisterFsSkill(registry *tools.ToolRegistry, agent interface{}) error {
 		Handler: handleReadFile,
 	})
 
-	registry.Register(&tools.Tool{
+	registry.RegisterTool(providerName, &tools.Tool{
 		Name:        "write_file",
 		Description: "将内容写入指定路径。相对路径（如 test.txt）会在第一个工作区目录下创建；绝对路径必须在 workspace_dirs 内。文件不存在会创建，存在则覆盖。",
 		Parameters: map[string]interface{}{
@@ -89,7 +89,7 @@ func RegisterFsSkill(registry *tools.ToolRegistry, agent interface{}) error {
 		Handler: handleWriteFile,
 	})
 
-	registry.Register(&tools.Tool{
+	registry.RegisterTool(providerName, &tools.Tool{
 		Name:        "edit_file",
 		Description: "在文件中将 old_content 的首次出现替换为 new_content。相对路径在工作区内解析；绝对路径必须在 workspace_dirs 内。若未找到 old_content 则返回错误。",
 		Parameters: map[string]interface{}{
@@ -213,16 +213,9 @@ var globalSkillFs *SkillFs
 
 func init() {
 	globalSkillFs = &SkillFs{}
-	tools.RegisterToolProviderWithMetadata(
-		providerName,
-		tools.ToolProviderMetadata{
-			Name:        providerName,
-			Version:     "0.1.0",
-			Description: "文件系统 - 在工作区目录内读写、编辑文件",
-			Author:      "OctoSucker",
-			Tags:        []string{"filesystem", "file", "read", "write", "edit"},
-		},
-		RegisterFsSkill,
-		globalSkillFs,
-	)
+	tools.RegisterToolProvider(&tools.ToolProviderInfo{
+		Name:        providerName,
+		Description: "文件系统 - 在工作区目录内读写、编辑文件",
+		Provider:    globalSkillFs,
+	})
 }
